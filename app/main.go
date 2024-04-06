@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"strconv"
+
 	// Uncomment this block to pass the first stage!
 	"os"
 	"os/exec"
@@ -16,6 +18,11 @@ func main() {
 
 	command := os.Args[3]
 	args := os.Args[4:len(os.Args)]
+
+	if args[0] == "exit" {
+		exitCode, _ := strconv.Atoi(args[1])
+		os.Exit(exitCode)
+	}
 
 	cmd := exec.Command(command, args...)
 
