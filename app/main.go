@@ -19,13 +19,27 @@ func main() {
 		os.Exit(1)
 	}
 
+	//create the /dev directory
 	if err := os.Mkdir("/tmp/my-docker-container-fs/dev", 0755); err != nil {
 		fmt.Println("error creating /dev dir", err)
 		os.Exit(1)
 	}
 
+	// Mount /dev to the chroot directory
 	if err := syscall.Mount("/dev", "/tmp/my-docker-container-fs/dev", "", syscall.MS_BIND, ""); err != nil {
 		fmt.Println("error mounting /dev:", err)
+		os.Exit(1)
+	}
+
+	// create the /usr directory
+	if err := os.Mkdir("/tmp/my-docker-container-fs/usr", 0755); err != nil {
+		fmt.Println("error creating /usr dir", err)
+		os.Exit(1)
+	}
+
+	// Mount /usr to the chroot directory
+	if err := syscall.Mount("/usr", "/tmp/my-docker-container-fs/usr", "", syscall.MS_BIND, ""); err != nil {
+		fmt.Println("error mounting /usr:", err)
 		os.Exit(1)
 	}
 
