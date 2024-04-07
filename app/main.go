@@ -29,6 +29,8 @@ func main() {
 		fmt.Println("error reading dir", err)
 	}
 
+	fmt.Println("Files in chroot", files)
+
 	for _, file := range files {
 		fmt.Println(file.Name(), file.IsDir())
 	}
