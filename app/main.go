@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"syscall"
@@ -37,17 +36,6 @@ func main() {
 
 	syscall.Chroot("/tmp/my-docker-container-fs")
 	syscall.Chdir("/") // set the working directory inside container
-
-	files, err := ioutil.ReadDir("/")
-	if err != nil {
-		fmt.Println("error reading dir", err)
-	}
-
-	fmt.Println("Files in chroot", files)
-
-	for _, file := range files {
-		fmt.Println(file.Name(), file.IsDir())
-	}
 
 	cmd := exec.Command(command, args...)
 
