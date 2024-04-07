@@ -10,6 +10,11 @@ import (
 // Usage: your_docker.sh run <image> <command> <arg1> <arg2> ...
 func main() {
 
+	// Unmount the directories when the program exits
+	defer syscall.Unmount("/tmp/my-docker-daemon-fs/dev", 0)
+	defer syscall.Unmount("/tmp/my-docker-daemon-fs/usr", 0)
+	defer os.Remove("/tmp/my-docker-daemon-fs") // Remove the chroot directory
+
 	command := os.Args[3]
 	args := os.Args[4:len(os.Args)]
 
@@ -44,11 +49,6 @@ func main() {
 		fmt.Println("error mounting /usr:", err)
 		os.Exit(1)
 	}
-
-	// Unmount the directories when the program exits
-	defer syscall.Unmount("/tmp/my-docker-daemon-fs/dev", 0)
-	defer syscall.Unmount("/tmp/my-docker-daemon-fs/usr", 0)
-	defer os.Remove("/tmp/my-docker-daemon-fs") // Remove the chroot directory
 
 	syscall.Chroot("/tmp/my-docker-daemon-fs")
 	syscall.Chdir("/") // set the working directory inside container
