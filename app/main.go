@@ -13,7 +13,7 @@ func main() {
 	command := os.Args[3]
 	args := os.Args[4:len(os.Args)]
 
-	os.RemoveAll("/tmp/my-docker-daemon-fs") // Remove the chroot directory
+	os.Remove("/tmp/my-docker-daemon-fs") // Remove the chroot directory
 
 	// Create a chroot directory
 	if err := os.Mkdir("/tmp/my-docker-daemon-fs", 0755); err != nil {
@@ -48,7 +48,7 @@ func main() {
 	// Unmount the directories when the program exits
 	defer syscall.Unmount("/tmp/my-docker-daemon-fs/dev", 0)
 	defer syscall.Unmount("/tmp/my-docker-daemon-fs/usr", 0)
-	defer os.RemoveAll("/tmp/my-docker-daemon-fs") // Remove the chroot directory
+	defer os.Remove("/tmp/my-docker-daemon-fs") // Remove the chroot directory
 
 	syscall.Chroot("/tmp/my-docker-daemon-fs")
 	syscall.Chdir("/") // set the working directory inside container
