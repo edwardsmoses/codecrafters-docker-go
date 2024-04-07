@@ -20,22 +20,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Create the /dev directory inside the chroot
-	err = os.Mkdir("/tmp/my-docker-container-fs/dev", 0755)
-	if err != nil {
-		fmt.Println("error creating /dev dir", err)
-		os.Exit(1)
-	}
-
-	// create the /dev/null file inside the chroot
-	_, err = os.Create("/tmp/my-docker-container-fs/dev/null")
-	if err != nil {
-		fmt.Println("error creating /dev/null file", err)
-		os.Exit(1)
-	}
-
 	syscall.Chroot("/tmp/my-docker-container-fs")
 	syscall.Chdir("/") // set the working directory inside container
+
+	// Mount the /dev directory
+	syscall.Mount("dev", "dev", "dev", 0, "")
 
 	cmd := exec.Command(command, args...)
 
@@ -45,6 +34,10 @@ func main() {
 	err = cmd.Run()
 
 	if err != nil {
+		fmt.Println("error running command:", err) // Print the error to the console
 		os.Exit(cmd.ProcessState.ExitCode())
 	}
+
+	// Unmount the /dev directory
+	syscall.Unmount("dev", 0)
 }
