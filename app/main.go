@@ -13,6 +13,8 @@ func main() {
 	command := os.Args[3]
 	args := os.Args[4:len(os.Args)]
 
+	os.RemoveAll("/tmp/my-docker-daemon-fs") // Remove the chroot directory
+
 	// Create a chroot directory
 	if err := os.Mkdir("/tmp/my-docker-daemon-fs", 0755); err != nil {
 		fmt.Println("error creating chroot dir", err)
