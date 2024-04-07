@@ -14,14 +14,18 @@ func main() {
 	args := os.Args[4:len(os.Args)]
 
 	// Create a chroot directory
-	err := os.Mkdir("/tmp/my-docker-container-fs", 0755)
-	if err != nil {
+	if err := os.Mkdir("/tmp/my-docker-container-fs", 0755); err != nil {
 		fmt.Println("error creating chroot dir", err)
 		os.Exit(1)
 	}
 
+	if err := os.Mkdir("/tmp/my-docker-container-fs/dev", 0755); err != nil {
+		fmt.Println("error creating /dev dir", err)
+		os.Exit(1)
+	}
+
 	if err := syscall.Mount("/dev", "/tmp/my-docker-container-fs/dev", "", syscall.MS_BIND, ""); err != nil {
-		fmt.Printf("error mounting /dev: %v\n", err)
+		fmt.Println("error mounting /dev:", err)
 		os.Exit(1)
 	}
 
@@ -35,9 +39,7 @@ func main() {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	err = cmd.Run()
-
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		fmt.Println("error running command:", err) // Print the error to the console
 		os.Exit(cmd.ProcessState.ExitCode())
 	}
