@@ -20,11 +20,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	// copy the root filesystem to the chroot directory
+	err = exec.Command("cp", "-a", "/rootfs/.", "/tmp/my-docker-container-fs").Run()
+	if err != nil {
+		fmt.Println("error copying root filesystem", err)
+	}
+	syscall.Mount("/dev/sda1", "/tmp/my-docker-container-fs", "ext4", syscall.MS_BIND, "")
+
 	syscall.Chroot("/tmp/my-docker-container-fs")
 	syscall.Chdir("/") // set the working directory inside container
-
-	// Mount the /dev directory
-	syscall.Mount("dev", "dev", "dev", 0, "")
 
 	cmd := exec.Command(command, args...)
 
@@ -38,6 +42,6 @@ func main() {
 		os.Exit(cmd.ProcessState.ExitCode())
 	}
 
-	// Unmount the /dev directory
-	syscall.Unmount("dev", 0)
+	// Unmount the root filesystem
+	syscall.Unmount("/tmp/my-docker-container-fs", syscall.MNT_DETACH)
 }
