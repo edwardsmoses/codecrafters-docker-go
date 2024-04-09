@@ -56,6 +56,10 @@ func main() {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Cloneflags: syscall.CLONE_NEWPID,
+	}
+
 	if err := cmd.Run(); err != nil {
 		fmt.Println("error running command:", err) // Print the error to the console
 		os.Exit(cmd.ProcessState.ExitCode())
